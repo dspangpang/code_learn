@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include<cuda.h>
 
 __global__ void square (float *d_out, float * d_in){
 	int idx = threadIdx.x;

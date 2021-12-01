@@ -87,6 +87,42 @@
 
 ## 程序设计
 
+### 归约reduction
+
+暂时理解为并行求和算法，以下图为例子
+
+![并行加法举例](./imges/并行加法举例.jpg)
+
+由图可知其**算法步骤**大致可以分为：
+
+1. 将输入的待加的数据对半分开取整，然后按照设计步长依次相加，没有对应相加的数据直接落下来，在第二次运算时相加，直到只有最后一个数据，便是这个线程块数据的总和
+
+2. 然后在把所有线程块里最后的一个数据重复步骤1的操作，即可得到所有数据的总和
+
+```c++
+//步骤1代码 （使用以共享内存计算为例子）
+__global__ void shared_reduce(float * d_out, float * d_in){       
+   //每一个线程快共享一个 shared memory
+    extern __shared__ float sdata[];
+    int threadid = threadIdx.x;
+    int kernelid = threadIdx.x + blockDim.x * blockIdx.x;
+
+    sdata[threadid] = d_in[kernelid];
+
+    __syncthreads();
+
+    for(unsigned int s = blockDim.x / 2; s > 0 ; s >>= 1 ){
+        if(threadid < s){
+            sdata[threadid] += sdata[threadid + s];
+        }
+        __syncthreads();
+    }
+    if(threadid == 0){
+        d_out[blockIdx.x] = sdata[threadid];
+    }
+}
+```
+
 ### 并行直方图
 
 以128个数字做直方图为例子，采用**局部直方图**的方法进行设计

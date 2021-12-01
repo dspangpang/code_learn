@@ -115,7 +115,7 @@ void reduce_shared(float * h_out, float * h_in, int size){
     cudaFree(d_in);
 
 }
-void array_init(int size, float * array, int * sum){
+void array_init(int size, float * array, float * sum){
     for(int i = 0; i < size; i++){
         array[i] = i + 1 ;
         *sum += array[i];
@@ -128,11 +128,11 @@ int main(int argc, char ** argv){
     if(deviceCount == 0){
         std::cout << "ERROR" << std::endl;
     }
-    const int ARRAY_SIZE = 1024*3;
+    const int ARRAY_SIZE = 1024*79;
     float h_in[ARRAY_SIZE] = {0};
     float h_out[1] = {0};
     float h_out1[1] = {0};
-    int sum;
+    float sum;
 
     clock_t start,end;
     

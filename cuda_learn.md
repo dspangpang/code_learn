@@ -123,6 +123,38 @@ __global__ void shared_reduce(float * d_out, float * d_in){
 }
 ```
 
+### 扫描scan
+
+&emsp;&emsp;暂时理解为，把内存中的数据作累加，例如计算一家餐厅的一周以来的**前某天**的收入总和。以下图为例子。
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![扫描举例](./imges/扫描算法举例.jpg)
+
+1. 先让里面所有数据间隔为$2^0$的数据两两相加
+2. 再让里面数据间隔为$2^1$的数据两两相加，一直执行n次，截至条件为$2^n \geq s$,s为数据总量
+
+```c++
+__global__ void global_scan(float * d_out, float * d_in, int size){
+    int kernelid = threadIdx.x + blockDim.x * blockIdx.x;
+    // int threadid = threadIdx.x;
+    int local_size = size;      //减少对全局变量的读取次数
+    float out = 0.00f;
+    d_out[kernelid] = d_in[kernelid];
+    __syncthreads();
+    for(int interval  = 1; interval < local_size; interval <<= 1 ){
+        if(kernelid - interval >= 0){
+            out = d_out[kernelid] + d_out[kernelid - interval];
+        }
+        __syncthreads();
+        if(kernelid >= interval){
+            d_out[kernelid] = out;
+            out = 0.00f;
+        }
+    }
+}
+```
+
+**目前该[程序](./cuda_code_practice/scan/scan.cu)存在问题**：当输入的d_in的size太大时会出现计算错误
+
 ### 并行直方图
 
 以128个数字做直方图为例子，采用**局部直方图**的方法进行设计

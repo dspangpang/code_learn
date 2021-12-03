@@ -159,6 +159,41 @@ __global__ void global_scan(float * d_out, float * d_in, int size){
 
 以128个数字做直方图为例子，采用**局部直方图**的方法进行设计
 
-1. 先把128分成若干组，每一组调一个线程，在其内部建立一个串行直方图，以8组为例，所以一共需要建立8个线程，每个线程处理16个数据的串行直方图
+1. 先把128分成8个线程，每一个线程处理16个数据，在其内部建立一个串行直方图，以3组为例（按照除以三的余数分类）。
 2. 然后使用归约算法（reduction）将这个8个线程内的数据加起来，即可得到并行设计的直方图
 
+```c++
+__global__ void local_histogram(int * d_out, int * d_in, int size_thread, int interval){
+    
+    int threadid = threadIdx.x;
+    int remainder_3 ;
+
+    for(int i = 0; i<size_thread; i++){
+        remainder_3 = d_in[size_thread*threadid + i] % interval ;
+        d_out[threadid * interval + remainder_3] += 1;
+    }
+
+}
+
+__global__ void local_histogram_reduce(int * d_out, int * d_in, int interval){
+    
+    extern __shared__ float sdata[];
+    int threadid = threadIdx.x;
+    int kernelid = threadIdx.x + blockDim.x * blockIdx.x;
+
+    sdata[threadid] = d_in[kernelid];
+
+    __syncthreads();
+
+    for(unsigned int s = blockDim.x / 2 ; s >= interval ; s >>= 1 ){
+        if(threadid < s){
+            sdata[threadid] += sdata[threadid + s];
+        }
+        __syncthreads();
+    }
+    if(threadid < 3){
+        d_out[threadid] = sdata[threadid];
+    }
+}
+```
+目前程序为举例的程序，不能实现任意数据的直方图的转换，后面还需要改进。

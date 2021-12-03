@@ -83,6 +83,7 @@ void reduce_global(float * h_out, float * h_in, int size){
 
     cudaFree(d_out);
     cudaFree(d_in);
+    cudaFree(d_step);
 
 }
 
@@ -113,6 +114,7 @@ void reduce_shared(float * h_out, float * h_in, int size){
 
     cudaFree(d_out);
     cudaFree(d_in);
+    cudaFree(d_step);
 
 }
 void array_init(int size, float * array, float * sum){
@@ -128,7 +130,7 @@ int main(int argc, char ** argv){
     if(deviceCount == 0){
         std::cout << "ERROR" << std::endl;
     }
-    const int ARRAY_SIZE = 1024*79;
+    const int ARRAY_SIZE = 1024;
     float h_in[ARRAY_SIZE] = {0};
     float h_out[1] = {0};
     float h_out1[1] = {0};

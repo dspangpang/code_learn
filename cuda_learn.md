@@ -89,7 +89,9 @@
 
 ### 归约reduction
 
-暂时理解为并行求和算法，以下图为例子
+目前可以理解为，可以需要并行计算的数据使用同样的算法进行多次计算，以求得结果。
+
+最常见的例子是并行求和算法，以下图为例子
 
 ![并行加法举例](./imges/并行加法举例.jpg)
 
@@ -125,7 +127,7 @@ __global__ void shared_reduce(float * d_out, float * d_in){
 
 ### 扫描scan
 
-&emsp;&emsp;暂时理解为，把内存中的数据作累加，例如计算一家餐厅的一周以来的**前某天**的收入总和。以下图为例子。
+&emsp;&emsp;例如计算一家餐厅的一周以来的**前某天**的收入总和。以下图为例子。
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![扫描举例](./imges/扫描算法举例.jpg)
 
@@ -207,3 +209,29 @@ __global__ void local_histogram_reduce(int * d_out, int * d_in, int interval){
 2. 把筛选出来的线程作并行分析。
 
 分配（allocate）：输出项可以动态的从每一个输入项计算得出，目前可以理解为，把输入组拆开成独立的输入，然后进行分析计算。
+
+### 分段扫描
+
+以稀疏矩阵乘法为例：
+$$
+\begin{bmatrix}
+a & 0 & b \\
+c & d & e \\
+0 & 0 & f
+\end{bmatrix}
+\begin{bmatrix}
+x \\ y \\ z  
+\end{bmatrix} 
+$$
+
+&emsp;&emsp;可以看出的稀疏矩阵存在许多的0，然而我们对于0的计算没有意义，所以我们把需要把矩阵中的0给剔除。所以我们可以用另外一种方式来表述该稀疏矩阵：
+
+**value** &emsp;&emsp;$\begin{bmatrix}
+    a & b & c & d & e & f  
+\end{bmatrix}$
+
+**column** &emsp;$\begin{bmatrix}
+    0 & 2 & 0 & 1 & 2 & 2  
+\end{bmatrix}$
+
+&emsp;&emsp;&emsp;&emsp;&emsp;![分段扫描举例](./imges/分段扫描举例.jpg)

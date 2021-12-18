@@ -221,7 +221,7 @@ c & d & e \\
 \end{bmatrix}
 \begin{bmatrix}
 x \\ y \\ z  
-\end{bmatrix} 
+\end{bmatrix}
 $$
 
 &emsp;&emsp;可以看出的稀疏矩阵存在许多的0，然而我们对于0的计算没有意义，所以我们把需要把矩阵中的0给剔除。所以我们可以用另外一种方式来表述该稀疏矩阵：

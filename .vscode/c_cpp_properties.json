@@ -10,7 +10,12 @@
                 "/usr/local/include/opencv4"
 
             ],
-            "defines": [],
+            "defines": [
+                "_ DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "CONFIG_LONG_FILE_NAME"
+            ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",

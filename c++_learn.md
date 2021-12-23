@@ -158,3 +158,18 @@ class C :public B, public A //多重继承
 * **虚继承解决了菱形继承的两个问题**：
   * **数据冗余**：顶级基类在整个体系中只保存了一份实例
   * **访问不明确（二义性）**：可以不通过作用域访问符::来调用（原理就是因为顶级基类在整个体系中只保存了一份实例）[示例](./c++_practice/Multiple_Inheritance/mul_inherite_virtual.cpp)
+
+### 副本构造器
+
+&emsp;&emsp;当删除其中一个对象时，它包含的指针也将被删除，但万一此时另一个副本（对象）还在引用这个指针，就会出问题。
+
+```c++
+MyClass obj1;
+MyClass obj2;
+obj2 = obj1;
+```
+
+**解决办法**：
+
+* 重载“=”操作符 [示例](./c++_practice/copy_constructor/override=.cpp)
+* 亲自定义个副本构造器(系统会自动生成逐一复制的副本构造器)```MyClass(const MyClass &rhs);```[示例](./c++_practice/copy_constructor/copy_constuctor.cpp)

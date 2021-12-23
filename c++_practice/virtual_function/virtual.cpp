@@ -63,7 +63,7 @@ int main(void)
     person *m = new men("张三");
     // men *m = new men("张三");      //用new来进行空间开创
     person *fm = new Women("如花");
-    m->eat();                         //因为是用基类来定义一个指针变量，为了效率会只编译基类定义的函数而不是将子类所覆盖的一同编译，所以需要visual
+    m->eat();                         //因为是用基类来定义一个指针变量，为了效率会只编译基类定义的函数而不是将子类所覆盖的一同编译，所以需要virtual
     fm->eat();
     delete m;
     delete fm;

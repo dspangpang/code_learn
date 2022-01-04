@@ -235,3 +235,163 @@ $$
 \end{bmatrix}$
 
 &emsp;&emsp;&emsp;&emsp;&emsp;![分段扫描举例](./imges/分段扫描举例.jpg)
+
+### 流Stream
+
+NVIDIA的GPU如下特点：
+
+1. 数据拷贝和数值计算可以同时进行。
+2. 两个方向的拷贝可以同时进行（GPU到CPU，和CPU到GPU），数据如同行驶在双向快车道。
+3. 进行数值计算的kernel不能读写正在被拷贝的数据。
+
+Stream是实现以上两个并行的重要工具。基本的概念是：
+
+1. 将数据拆分称许多块，每一块交给一个Stream来处理。
+2. 每一个Stream包含了三个步骤：
+   1. 将属于该Stream的数据从CPU内存转移到GPU内存
+   2. GPU进行运算并将结果保存在GPU内存
+   3. 将该Stream的结果从GPU内存拷贝到CPU内存。
+3. 所有的Stream被同时启动，由GPU的scheduler决定如何并行。
+
+&emsp;&emsp;假设我们把数据分成A，B两块，各由一个Stream来处理。A的数值计算可以和B的数据传输同时进行，而A与B的数据传输也可以同时进行。由于第一个Stream只用到了数据A，而第二个Stream只用到了数据B，“进行数值计算的kernel不能读写正在被拷贝的数据”这一限制并没有被违反。
+
+### 多GPU编程(粗略还需继续深入学习)
+
+#### 基础
+
+1. 多GPU两种连接方式:
+   1. 多GPU通过单个节点连接到PCIe总线上
+   2. 多GPU连接到集群中的网络交换机上
+2. 两种常见的GPU通信模式
+   1. 没必要进行数据交换,GPU间没有数据共享
+   2. 有部分数据交换,GPU需要冗余数据存储。要避免通过主机内存中转数据(从GPU复制到Ram,再复制到另一个GPU上)
+   ```cudaError_t cudaGetDeviceCount(int* count);```获得的GPU数量
+   ```cudaError_t cudaSetDevice(int id);```指定使用哪个GPU.从0到n-1,默认设置为0.可以使用循环向多个GPU发送指令,异步不会阻塞
+   ```cudaError_t cudaGetDeviceProperties(struct cudaDeviceProp *prop,int device);```获得GPU属性
+
+#### 点对点通信
+
+1. 点对点访问:在CUDA内核和GPU间直接加载和存储地址
+2. 点对点传输:在GPU间直接复制数据
+3. 两个GPU连接到不同的PCIe根节点上,不允许直接进行点对点访问.
+4. ```cudaError_t cudaDeviceCanAccessPeer(int* canAccessPeer, int device, int peerDevice);```支持P2P返回1,否则返回0
+5. ```cudaError_t cudaDeviceEnablePeerAccess(int peerDevice,unsigned int flag);```显式启用点对点内存访问,一旦启用成功,立刻能访问对等设备,这个授权是单向的,不允许对方访问
+6. ```cudaError_t cudaDeviceDisablePeerAccess(int peerDevice);```关闭P2P
+
+#### 点对点内存复制
+
+```cudaError_t cudaMemcpyPeerAsync(void* dst, int dstDev,void* src,int srcDev,size_t nBytes, cudaStream_t stream);```启动P2P后,异步复制设备上的数据,从srcDev传输到dstDev内存中.如果srcDev和dstDev共享相同的PCIe根节点,则数据通过PCIe最短路径传输
+
+#### 统一寻址的点对点访问
+
+UVA将CPU系统内存和设备的全局内存映射到单一的虚拟地址空间中.所有cudaHostAlloc分配的主机内存和cudaMalloc分配的设备内存主流在统一的地址空间内.
+
+#### 跨GPU集群拓展应用程序
+
+1. MPI(消息传递接口)标准化的数据通信API,通过分布式进程之间的消息进行数据通信
+2. GPU之间不同节点上移动数据的MPI有两种实现方式:
+    1. 传统的MPI :GPU内存要先复制到主机内存,再传输
+    2. CUDA-aware MPI:吧GPU内存直接传输,对InfiniBand集群,MVAPICH2是被广泛使用的开源MPI库
+3. MPI程序包括4个步骤
+   1. 初始化MPI环境
+   2. 使用阻塞或非阻塞MPI函数在不同节点间的进程传递消息
+   3. 跨节点同步
+   4. 清理MPI环境
+
+### 纹理内存(粗略还需继续深入学习)
+
+#### 纹理内存的特性
+
+&emsp;&emsp;纹理存储器中的数据以一维、二维或者三维数组的形式存储在显存中，可以通过缓存加速访问，并且可以声明大小比常数存储器要大的多。在kernel中访问纹理存储器的操作称为**纹理拾取**(texture fetching)。将显存中的数据与纹理参照系关联的操作，称为将数据与**纹理绑定**(texture binding).显存中可以绑定到纹理的数据有两种，分别是普通的线性存储器和cuda数组。
+&emsp;&emsp;线性存储器是用cudaMalloc()声明的一段连续的线性内存空间，而CUDA数组则是通过cudaMallocArray()进行声明，并且是线性对齐的。CUDA数组对于纹理拾取访问进行了优化，但是设备端只能通过纹理拾取访问， 即我们不能直接操作CUDA数组。可以说，CUDA数组就是为纹理拾取而生的。
+**注**：
+
+* 线性存储器只能与一维或二维纹理绑定,采用整型纹理拾取坐标，坐标值与数据在存储器中的位置相同；
+* CUDA数组可以与一维、二维、三维纹理绑定，纹理拾取坐标为归一化或者非归一化的浮点型，并且支持许多特殊功能。
+
+#### 纹理内存作用
+
+1. 纹理内存中的数据可以被重复利用，当需要的数据存在于纹理缓存中，就不用再去显存读取了
+2. 纹理拾取可以读取纹理坐标附近的几个象元，提高局部性的访问效率，实现滤波模式。换言之，对于图像滤波具有很好的性能。
+
+#### 一维纹理存储器的使用方法
+
+##### 1. 在host端声明线性内存空间
+
+   分配线性内存空间的方法常见有cudaMalloc(), 由cudaMallocPitch()或者cudaMalloc3D()分配的线性空间是经过填充对齐的线性内存。
+
+##### 2. 声明纹理参考系
+
+```texture<Type, Dim, ReadMode> texRef```;
+//Type指定数据类型，特别注意：不支持3元组
+//Dim指定纹理参考系的维度，默认为1
+//ReadMode可以是cudaReadModelNormalizedFloat或cudaReadModelElementType(默认)
+注意：type仅限于基本整型、单精度浮点类型和CUDA运行时提供的1元组、2元组和四元祖。
+
+```texture<int, 1, cudaReaModeElementType> texRef;```这样就声明了一个一维整数的纹理。
+
+##### 3. 绑定数据到纹理
+
+通过cudaBindTexture()函数将纹理参考连接到内存。将1维线性内存绑定到1维纹理。
+
+```cudaError_t cudaBindTexture(    size_t *offset, const struct textureReference*texref, const void *devPtr,const struct cudaChannelFormatDesc* desc,size_t  size = UINT_MAX )```  
+例如：```cudaBindTexture(0, texRef, d_data)```;
+
+##### 4. 设备端的纹理拾取
+
+在kernel中对纹理存储器进行访问，要通过tex1Dfetch()函数,通过纹理参考和给出的坐标位置就可以取得数据了。
+
+```type tex1Dfetch(texture<type,1,ReadMode> texRef, int x);```
+
+#### 二维纹理存储器的使用方法
+
+##### 1.声明CUDA数组
+
+使用CUDA数组主要通过三个函数使用：```cudaMallocArray(), cudaMemcpyToArray(),cudaFreeArray()```. 在声明CUDA数组之前，必须先描述结构体```cudaChannelFormatDes()```的组件数量和数据类型。
+
+结构体定义
+
+```c++
+struct   cudaChannelFormatDesc {
+    int x, y, z, w;
+    enumcudaChannelFormatKind f;
+};
+ ```
+
+x, y, z和w分别是每个返回值成员的位数，而f是一个枚举变量，可以取一下几个值：
+–cudaChannelFormatKindSigned，如果这些成员是有符号整型
+· –cudaChannelFormatKindUnsigned，如果这些成员是无符号整型
+–cudaChannelFormatKindFloat，如果这些成员是浮点型
+
+CUDA数组的创建方法：
+
+```c++
+cudaChannelFormatDesc  channelDesc = cudaCreateChannelDesc<float>();//声明数据类型
+cudaArray *cuArray;
+//分配大小为W*H的CUDA数组
+cudaMallocArray(&cuArray, &channelDesc, Width, Height);
+```
+
+CUDA 数组的复制：
+
+```c++
+        cudaMemcpyToArray(struct cuArray* dstArray, size_t dstX, size_t dstY,  const void *src, size_t  count, enum cudaMemcpyKind kind);  
+```
+
+&emsp;&emsp;函数功能是：把数据src复制到CUDA 数组dstArray中，复制的数据字节大小为count，从src的左上角(dstX,dstY)开始复制。cudaMemcpyKind 复制方向有：hostTohost, hostTodevice, deviceTohost,device todevice(简写方式).
+
+##### 2.声明纹理参考系
+
+```c++
+//声明一个float 类型的2维的纹理，读取模式为cudaReadModeElementType，也可以声明其他的读取模式
+texture<float, 2, cudaReadModeElementType> texRef
+```
+
+##### 3.绑定CUDA数组到纹理
+
+调用```cudaBindTextureToArray()```函数把CUDA数组和纹理连接起来。
+
+##### 4.设备端的纹理拾取
+
+和一维纹理内存的```tex1Dfetch()```不同，需要使用```tex1D()、tex2D()、tex3D()```这三个函数，分别是用在1D/2D/3D的纹理。
+二维纹理内存使步骤和一维区别不大，主要是利用CUDA数组来进行绑定。

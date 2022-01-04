@@ -173,3 +173,76 @@ obj2 = obj1;
 
 * 重载“=”操作符 [示例](./c++_practice/copy_constructor/override=.cpp)
 * 亲自定义个副本构造器(系统会自动生成逐一复制的副本构造器)```MyClass(const MyClass &rhs);```[示例](./c++_practice/copy_constructor/copy_constuctor.cpp)
+
+### 模板
+
+* 模板是泛型编程的基础，泛型编程即以一种独立于任何特定类型的方式编写代码。
+* 模板是创建泛型类或函数的蓝图或公式。库容器，比如迭代器和算法，都是泛型编程的例子，它们都使用了模板的概念。
+* 可以使用模板来定义函数和类，接下来让我们一起来看看如何使用。
+
+#### 函数模板
+
+```c++
+template <typename T> ret-type func-name(parameter list)
+{
+   // 函数的主体
+}
+```
+
+T是函数所使用的数据类型的占位符名称。这个名称可以在函数定义中使用。
+
+#### 类模板
+
+就像定义函数模板一样，也可以定义类模板。泛型类声明的一般形式如下所示：
+
+```c++
+template <class type> class class-name {
+
+}
+```
+
+以操作**栈**举例
+
+```c++
+template <class T>
+class Stack { 
+  private: 
+    vector<T> elems;     // 元素 
+ 
+  public: 
+    void push(T const&);  // 入栈
+    void pop();               // 出栈
+    T top() const;            // 返回栈顶元素
+    bool empty() const{       // 如果为空则返回真。
+        return elems.empty(); 
+    } 
+}; 
+ 
+template <class T>
+void Stack<T>::push (T const& elem) 
+{ 
+    // 追加传入元素的副本
+    elems.push_back(elem);    
+} 
+ 
+template <class T>
+void Stack<T>::pop () 
+{ 
+    if (elems.empty()) { 
+        throw out_of_range("Stack<>::pop(): empty stack"); 
+    }
+    // 删除最后一个元素
+    elems.pop_back();         
+} 
+ 
+template <class T>
+T Stack<T>::top () const 
+{ 
+    if (elems.empty()) { 
+        throw out_of_range("Stack<>::top(): empty stack"); 
+    }
+    // 返回最后一个元素的副本 
+    return elems.back();      
+} 
+
+```

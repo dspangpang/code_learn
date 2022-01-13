@@ -87,8 +87,8 @@ bool SemiGlobalMatching::Match(const uint8* img_left, const uint8* img_right, fl
     // 代价计算
     ComputeCost();
 
-    // // 代价聚合
-    // CostAggregation();
+    // 代价聚合
+    CostAggregation();
 
     // 视差计算
     ComputeDisparity();

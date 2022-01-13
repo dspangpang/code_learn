@@ -83,8 +83,8 @@ void CensusTransform() const;
 /** \brief 代价计算	 */
 void ComputeCost() const;
 
-// /** \brief 代价聚合	 */
-// void CostAggregation() const;
+/** \brief 代价聚合	 */
+void CostAggregation() const;
 
 /** \brief 视差计算	 */
 void ComputeDisparity() const;

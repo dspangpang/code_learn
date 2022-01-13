@@ -44,7 +44,7 @@ int main(int argv,char** argc)
 
     // 匹配
     auto disparity = new float32[width * height]();
-    if(!sgm.Match(img_left.data,img_right.data,disparity)) {
+    if(!sgm.Match(img_left.data, img_right.data, disparity)) {
         std::cout << "SGM匹配失败！" << std::endl;
         return -2;
     }

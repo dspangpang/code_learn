@@ -182,7 +182,7 @@ x^*\\y^*\\z^*\\1\end{bmatrix}
 \begin{bmatrix}x\\y\\z\\1\end{bmatrix}  \\
 \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} & =\frac{1}{Z_c}
 \begin{bmatrix}\frac{1}{\mathrm{d}x} & 0 & u_0 \\ 0 &
-\frac{1}{\mathrm{d}y} & v_0 \\ 0 & 0 & 1 
+\frac{1}{\mathrm{d}y} & v_0 \\ 0 & 0 & 1
  \end{bmatrix}\begin{bmatrix} f & 0 & 0 & 0\\
 0&f&0&0\\ 0&0&1&0 \end{bmatrix}
 \begin{bmatrix} X_c\\Y_c\\ Z_c \\1 \end{bmatrix}\\
@@ -195,7 +195,7 @@ $$\Rightarrow\begin{bmatrix} u \\ v \\ 1 \end{bmatrix} =\frac{1}{Z_c}
 f_y& v_0&0 \\ 0 & 0 & 1 &0
  \end{bmatrix}
 \begin{bmatrix} R &T\\
- \overrightarrow{0} & 1 
+ \overrightarrow{0} & 1
  \end{bmatrix}
 \begin{bmatrix} X_c\\Y_c\\ Z_c \\1 \end{bmatrix}
 $$
@@ -205,6 +205,36 @@ $$\Rightarrow\begin{bmatrix} u \\ v \\ 1 \end{bmatrix} =\frac{1}{Z_c}
 \frac{f}{\mathrm{d}y} & v_0&0 \\ 0 & 0 & 1 &0
  \end{bmatrix}
 \begin{bmatrix} R &T\\
-  \overrightarrow{0}& 1 
+  \overrightarrow{0}& 1
  \end{bmatrix}
 \begin{bmatrix} X_c\\Y_c\\ Z_c \\1 \end{bmatrix}$$
+
+
+## 代码实践
+
+### SGM匹配
+
+#### SGM_C++程序框图
+
+![扫描举例](./imges/SGM结构.svg)
+
+#### Census变换法
+
+&emsp;&emsp;Census变换是使用像素邻域内的局部灰度差异将像素灰度转换为由0，1组成的比特串，思路非常简单，通过将邻域窗口(窗口大小为$n \times m$,n和m都为奇数)内的像素灰度值与窗口中心像素的灰度值进行比较，将比较得到的布尔值映射到一个比特串中。
+&emsp;&emsp;基于Census变换的匹配代价计算方法是计算左右影像对应的两个像素的Census变换值的汉明（Hamming）距离。Hamming距离即两个比特串的对应位不相同的数量，计算方法为将两个比特串进行亦或运算，再统计亦或运算结果的比特位中不为1的个数。
+
+#### 代价聚合
+
+像素$P$沿着某条路径$r$的路径代价计算公式:
+$$
+L_r(p,d) = C(p,d)+min \left \{ \begin{aligned}
+    & L_r(p-r,d) \\
+    & L_r(p-r,d-1) + P_1 \\
+    & L_r(p-r,d+1) + P_1 \\
+    & \substack{\min \\ i}L_r(p-r,i) + P_2 \\
+\end{aligned}
+\right \}-\substack{\min \\ i}L_r(p-r,i)
+$$
+
+&emsp;&emsp;公式中$p$代表像素，$r$代表路径，左右路径的情形下$p-r$就是$p$左侧（从左到右聚合）或者右侧（从右到左聚合）的相邻像素，他们行号相等，列号相差1。$L$是聚合代价值，$C$是初始代价值。
+

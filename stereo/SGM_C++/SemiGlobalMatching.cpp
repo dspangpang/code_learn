@@ -81,6 +81,7 @@ bool SemiGlobalMatching::Match(const uint8* img_left, const uint8* img_right, fl
     img_left_ =  img_left;
     img_right_ = img_right;
 
+
     // census变换
     CensusTransform();
 
@@ -89,7 +90,7 @@ bool SemiGlobalMatching::Match(const uint8* img_left, const uint8* img_right, fl
 
     // 代价聚合
     CostAggregation();
-
+    
     // 视差计算
     ComputeDisparity();
 
@@ -131,62 +132,15 @@ bool SemiGlobalMatching::Reset(const uint32& width, const uint32& height, const 
     return Initialize(width, height, option);
 }
 
-void census_transform_5x5(const uint8* source, uint32* census, const sint32& width,const sint32& height)
-{
-	if (source == nullptr || census == nullptr || width <= 5u || height <= 5u) {
-		return;
-	}
-
-	// 逐像素计算census值
-	for (sint32 i = 2; i < height - 2; i++) {
-		for (sint32 j = 2; j < width - 2; j++) {
-			
-			// 中心像素值
-			const uint8 gray_center = source[i * width + j];
-			
-			// 遍历大小为5x5的窗口内邻域像素，逐一比较像素值与中心像素值的的大小，计算census值
-			uint32 census_val = 0u;
-			for (sint32 r = -2; r <= 2; r++) {
-				for (sint32 c = -2; c <= 2; c++) {
-					census_val <<= 1;
-					const uint8 gray = source[(i + r) * width + j + c];
-					if (gray < gray_center) {
-						census_val += 1;
-					}
-				}
-			}
-
-			// 中心像素的census值
-			census[i * width + j] = census_val;		
-		}
-	}
-}
-
 void SemiGlobalMatching::CensusTransform() const
 {
 	// 左右影像census变换
-    census_transform_5x5(img_left_, census_left_, width_, height_);
+    sgm_util::census_transform_5x5(img_left_, census_left_, width_, height_);
 
-    census_transform_5x5(img_right_, census_right_, width_, height_);
+    sgm_util::census_transform_5x5(img_right_, census_right_, width_, height_);
     
 }
 
-
-// unsigned to 32bit
-//计算hamming距离
-uint32 hamDist32(const uint32& x, const uint32& y)
-{
-	uint32 dist = 0, val = x ^ y;
-
-	// Count the number of set bits
-	while (val)
-	{
-		++dist;
-		val &= val - 1;
-	}
-
-	return dist;
-}
 
 void SemiGlobalMatching::ComputeCost() const
 {
@@ -214,11 +168,53 @@ void SemiGlobalMatching::ComputeCost() const
                 const uint32 census_val_r = census_right_[i * width_ + j - d];
                 
         		// 计算匹配代价
-                cost = hamDist32(census_val_l, census_val_r);
+                cost = sgm_util::hamDist32(census_val_l, census_val_r);
             }
         }
     }
 }
+
+void SemiGlobalMatching::CostAggregation() const
+{
+    // 路径聚合
+    // 1、左->右/右->左
+    // 2、上->下/下->上
+    // 3、左上->右下/右下->左上
+    // 4、右上->左上/左下->右上
+    //
+    // ↘ ↓ ↙   5  3  7
+    // →    ←	 1    2
+    // ↗ ↑ ↖   8  4  6
+    //
+    const auto& min_disparity = option_.min_disparity;
+    const auto& max_disparity = option_.max_disparity;
+    assert(max_disparity > min_disparity);
+
+    const sint32 size = width_ * height_ * (max_disparity - min_disparity);
+    if(size <= 0) {
+        return;
+    }
+
+    const auto& P1 = option_.p1;
+    const auto& P2_Int = option_.p2_int;
+
+    // 左右聚合
+    sgm_util::CostAggregateLeftRight(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_1_, true);
+    sgm_util::CostAggregateLeftRight(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_2_, false);
+    // 上下聚合
+    sgm_util::CostAggregateUpDown(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_3_, true);
+    sgm_util::CostAggregateUpDown(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_4_, false);
+
+    
+    // 把4/8个方向加起来
+    for(sint32 i =0;i<size;i++) {
+    	cost_aggr_[i] = cost_aggr_1_[i] + cost_aggr_2_[i] + cost_aggr_3_[i] + cost_aggr_4_[i];
+    	if (option_.num_paths == 8) {
+            cost_aggr_[i] += cost_aggr_5_[i] + cost_aggr_6_[i] + cost_aggr_7_[i] + cost_aggr_8_[i];
+        }
+    }
+}
+
 
 void SemiGlobalMatching::ComputeDisparity() const
 {

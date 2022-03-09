@@ -2,7 +2,10 @@
 
 #include <iostream>
 #include <string>
+#include <assert.h>
+
 #include "SemiGlobalMatching.h"
+#include "sgm_util.h"
 
 #include <opencv2/opencv.hpp>
 

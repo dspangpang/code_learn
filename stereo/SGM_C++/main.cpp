@@ -48,7 +48,6 @@ int main(int argv,char** argc)
         std::cout << "SGM匹配失败！" << std::endl;
         return -2;
     }
-
     // 显示视差图
     cv::Mat disp_mat = cv::Mat(height, width, CV_8UC1);
     for (uint32 i=0;i<height;i++) {

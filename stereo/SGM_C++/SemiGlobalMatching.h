@@ -12,23 +12,6 @@ typedef uint64_t		uint64;		// 无符号64位整数
 typedef float			float32;	// 单精度浮点
 typedef double			float64;	// 双精度浮点
 
-/**
- * \brief census变换
- * \param source	输入，影像数据
- * \param census	输出，census值数组
- * \param width		输入，影像宽
- * \param height	输入，影像高
- */
-void census_transform_5x5(const uint8* source, uint32* census, const sint32& width, const sint32& height);
-
-/**
- * \brief haming距离计算
- * \param x	输入数据1
- * \param y	输入数据1
- * \return haming距离的值
- */
-uint32 hamDist32(const uint32& x, const uint32& y);
-
 class SemiGlobalMatching
 {
 public:
@@ -144,7 +127,6 @@ uint8* cost_aggr_6_;
 /** \brief 聚合匹配代价-方向7	*/
 uint8* cost_aggr_7_;
 /** \brief 聚合匹配代价-方向8	*/
-uint8* cost_aggr_8_;
-
+uint8* cost_aggr_8_;    
 
 };

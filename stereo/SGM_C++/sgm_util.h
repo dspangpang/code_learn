@@ -32,7 +32,7 @@ uint32 hamDist32(const uint32& x, const uint32& y);
  * \param min_disparity 最小视差	
  * \param max_disparity 最大视差
  * \param p1 惩罚系数P1
- * \param p2_init 惩罚系数P2
+ * \param p2_init 惩罚系数P2初始值
  * \param cost_init 初始代价
  * \param cost_aggr 代价聚合
  * \param is_forward 控制聚合方向 1/0
@@ -48,7 +48,7 @@ void CostAggregateLeftRight(const uint8* img_data, const sint32& width, const si
  * \param min_disparity 最小视差	
  * \param max_disparity 最大视差
  * \param p1 惩罚系数P1
- * \param p2_init 惩罚系数P2
+ * \param p2_init 惩罚系数P2初始值
  * \param cost_init 初始代价
  * \param cost_aggr 代价聚合
  * \param is_forward 控制聚合方向 1/0
@@ -56,4 +56,39 @@ void CostAggregateLeftRight(const uint8* img_data, const sint32& width, const si
 void CostAggregateUpDown(const uint8* img_data, const sint32& width, const sint32& height,const sint32& min_disparity, const sint32& max_disparity, 
 	const sint32& p1, const sint32& p2_init,const uint8* cost_init, uint8* cost_aggr, bool is_forward);
 
+
+/**
+ * \brief 对角线方向路径聚合1
+ * \param img_data 输入图像地址
+ * \param width	图像宽
+ * \param height 图像高
+ * \param min_disparity 最小视差	
+ * \param max_disparity 最大视差
+ * \param p1 惩罚系数P1
+ * \param p2_init 惩罚系数P2初始值
+ * \param cost_init 初始代价
+ * \param cost_aggr 代价聚合
+ * \param is_forward 控制聚合方向 1/0
+ */
+void CostAggregateDagonal_1(const uint8* img_data, const sint32& width, const sint32& height,const sint32& min_disparity, const sint32& max_disparity, const sint32& p1, const sint32& p2_init,
+	const uint8* cost_init, uint8* cost_aggr, bool is_forward);
+
+/**
+ * \brief 对角线方向路径聚合2
+ * \param img_data 输入图像地址
+ * \param width	图像宽
+ * \param height 图像高
+ * \param min_disparity 最小视差	
+ * \param max_disparity 最大视差
+ * \param p1 惩罚系数P1
+ * \param p2_init 惩罚系数P2初始值
+ * \param cost_init 初始代价
+ * \param cost_aggr 代价聚合
+ * \param is_forward 控制聚合方向 1/0
+ */
+void CostAggregateDagonal_2(const uint8* img_data, const sint32& width, const sint32& height,
+	const sint32& min_disparity, const sint32& max_disparity, const sint32& p1, const sint32& p2_init,
+	const uint8* cost_init, uint8* cost_aggr, bool is_forward);
+
 }
+

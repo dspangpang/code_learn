@@ -25,6 +25,39 @@ SemiGlobalMatching::~SemiGlobalMatching()
         delete[] cost_aggr_;
         cost_aggr_ = nullptr;
     }
+    //各个方向代价聚合清空
+    if (cost_aggr_1_ != nullptr) {
+        delete[] cost_aggr_1_;
+        cost_aggr_1_ = nullptr;
+    }
+    if (cost_aggr_2_ != nullptr) {
+        delete[] cost_aggr_2_;
+        cost_aggr_2_ = nullptr;
+    }
+     if (cost_aggr_3_ != nullptr) {
+        delete[] cost_aggr_3_;
+        cost_aggr_3_ = nullptr;
+    }
+     if (cost_aggr_4_ != nullptr) {
+        delete[] cost_aggr_4_;
+        cost_aggr_4_ = nullptr;
+    }
+     if (cost_aggr_5_ != nullptr) {
+        delete[] cost_aggr_5_;
+        cost_aggr_5_ = nullptr;
+    }
+     if (cost_aggr_6_ != nullptr) {
+        delete[] cost_aggr_6_;
+        cost_aggr_6_ = nullptr;
+    }
+     if (cost_aggr_7_ != nullptr) {
+        delete[] cost_aggr_7_;
+        cost_aggr_7_ = nullptr;
+    }
+     if (cost_aggr_8_ != nullptr) {
+        delete[] cost_aggr_8_;
+        cost_aggr_8_ = nullptr;
+    }
     if(disp_left_ != nullptr) {
         delete[] disp_left_;
         disp_left_ = nullptr;
@@ -59,6 +92,18 @@ bool SemiGlobalMatching::Initialize(const uint32& width, const uint32& height, c
         return false;
     }
     cost_init_ = new uint8[width * height * disp_range]();
+
+    //代价聚合各个方向
+    cost_aggr_1_ = new uint8[width * height * disp_range]();
+    cost_aggr_2_ = new uint8[width * height * disp_range]();
+    cost_aggr_3_ = new uint8[width * height * disp_range]();
+    cost_aggr_4_ = new uint8[width * height * disp_range]();
+    cost_aggr_5_ = new uint8[width * height * disp_range]();
+    cost_aggr_6_ = new uint8[width * height * disp_range]();
+    cost_aggr_7_ = new uint8[width * height * disp_range]();
+    cost_aggr_8_ = new uint8[width * height * disp_range]();
+
+    //代价聚合值
     cost_aggr_ = new uint16[width * height * disp_range]();
 
     // 视差图
@@ -183,7 +228,7 @@ void SemiGlobalMatching::CostAggregation() const
     // 4、右上->左上/左下->右上
     //
     // ↘ ↓ ↙   5  3  7
-    // →    ←	 1    2
+    // →   ←   1     2
     // ↗ ↑ ↖   8  4  6
     //
     const auto& min_disparity = option_.min_disparity;
@@ -201,10 +246,18 @@ void SemiGlobalMatching::CostAggregation() const
     // 左右聚合
     sgm_util::CostAggregateLeftRight(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_1_, true);
     sgm_util::CostAggregateLeftRight(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_2_, false);
+    
     // 上下聚合
     sgm_util::CostAggregateUpDown(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_3_, true);
     sgm_util::CostAggregateUpDown(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_4_, false);
 
+    // 对角线聚合1
+    sgm_util::CostAggregateDagonal_1(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_5_, true);
+    sgm_util::CostAggregateDagonal_1(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_6_, false);
+
+    // 对角线聚合2
+    sgm_util::CostAggregateDagonal_2(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_5_, true);
+    sgm_util::CostAggregateDagonal_2(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_6_, false);
     
     // 把4/8个方向加起来
     for(sint32 i =0;i<size;i++) {
@@ -225,8 +278,8 @@ void SemiGlobalMatching::ComputeDisparity() const
     //视差范围
     const uint32 disp_range = max_disparity - min_disparity;
 
-    // 未实现聚合步骤，暂用初始代价值来代替
-    auto cost_ptr = cost_init_;
+    // 代价聚合
+    auto cost_ptr = cost_aggr_;
 
     // 逐像素计算最优视差
     for (sint32 i = 0; i < height_; i++) {

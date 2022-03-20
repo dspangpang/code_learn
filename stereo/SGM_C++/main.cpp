@@ -65,8 +65,8 @@ int main(int argv,char** argc)
     delete[] disparity;
     disparity = nullptr;
 
-    cv::imwrite("视差图.png", disp_mat);
-    cv::imshow("视差图", disp_mat);
+    cv::imwrite("视差图1.png", disp_mat);
+    cv::imshow("视差图1", disp_mat);
     cv::waitKey(0);
     cv::destroyAllWindows();
 

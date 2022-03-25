@@ -69,7 +69,10 @@
         "set": "cpp",
         "cinttypes": "cpp",
         "__node_handle": "cpp",
-        "locale": "cpp"
+        "locale": "cpp",
+        "dense": "cpp",
+        "eigenvalues": "cpp",
+        "geometry": "cpp"
     },
     "cmake.configureOnOpen": false
 }

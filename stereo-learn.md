@@ -209,7 +209,6 @@ $$\Rightarrow\begin{bmatrix} u \\ v \\ 1 \end{bmatrix} =\frac{1}{Z_c}
  \end{bmatrix}
 \begin{bmatrix} X_c\\Y_c\\ Z_c \\1 \end{bmatrix}$$
 
-
 ## 代码实践
 
 ### SGM匹配
@@ -237,4 +236,3 @@ L_r(p,d) = C(p,d)+min \left \{ \begin{aligned}
 $$
 
 &emsp;&emsp;公式中$p$代表像素，$r$代表路径，左右路径的情形下$p-r$就是$p$左侧（从左到右聚合）或者右侧（从右到左聚合）的相邻像素，他们行号相等，列号相差1。$L$是聚合代价值，$C$是初始代价值。
-

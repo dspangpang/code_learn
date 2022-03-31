@@ -4,12 +4,17 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "/usr/include/",
+                "/usr/local/include/",
                 "/usr/local/cuda-11.0/include",
                 "/usr/local/cuda/include",
                 "/usr/local/include/opencv4/opencv2",
                 "/usr/local/include/opencv4",
-                "/usr/include/eigen3/Eigen"
-
+                "/usr/include/eigen3/Eigen",
+                "/usr/include/eigen3",
+                "/usr/include/pcl-1.10/pcl",
+                "/usr/include/pcl-1.10/",
+                "/usr/include/vtk-7.1"
             ],
             "defines": [
                 "_ DEBUG",

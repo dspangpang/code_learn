@@ -170,6 +170,39 @@ bool SemiGlobalMatching::Reset(const uint32& width, const uint32& height, const 
         disp_left_ = nullptr;
     }
 
+    //聚合路径内存释放
+    if (cost_aggr_1_ != nullptr) {
+        delete[] cost_aggr_1_;
+        cost_aggr_1_ = nullptr;
+    }
+    if (cost_aggr_2_ != nullptr) {
+        delete[] cost_aggr_2_;
+        cost_aggr_2_ = nullptr;
+    }
+    if (cost_aggr_3_ != nullptr) {
+        delete[] cost_aggr_3_;
+        cost_aggr_3_ = nullptr;
+    }
+    if (cost_aggr_4_ != nullptr) {
+        delete[] cost_aggr_4_;
+        cost_aggr_4_ = nullptr;
+    }
+    if (cost_aggr_5_ != nullptr) {
+        delete[] cost_aggr_5_;
+        cost_aggr_5_ = nullptr;
+    }
+    if (cost_aggr_6_ != nullptr) {
+        delete[] cost_aggr_6_;
+        cost_aggr_6_ = nullptr;
+    }
+    if (cost_aggr_7_ != nullptr) {
+        delete[] cost_aggr_7_;
+        cost_aggr_7_ = nullptr;
+    }
+    if (cost_aggr_8_ != nullptr) {
+        delete[] cost_aggr_8_;
+        cost_aggr_8_ = nullptr;
+    }
     // 重置初始化标记
     is_initialized_ = false;
 
@@ -256,8 +289,8 @@ void SemiGlobalMatching::CostAggregation() const
     sgm_util::CostAggregateDagonal_1(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_6_, false);
 
     // 对角线聚合2
-    sgm_util::CostAggregateDagonal_2(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_5_, true);
-    sgm_util::CostAggregateDagonal_2(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_6_, false);
+    sgm_util::CostAggregateDagonal_2(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_7_, true);
+    sgm_util::CostAggregateDagonal_2(img_left_, width_, height_, min_disparity, max_disparity, P1, P2_Int, cost_init_, cost_aggr_8_, false);
     
     // 把4/8个方向加起来
     for(sint32 i =0;i<size;i++) {

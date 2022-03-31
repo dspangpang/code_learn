@@ -374,12 +374,14 @@ void sgm_util::CostAggregateDagonal_2(const uint8* img_data, const sint32& width
 			cost_init_col = cost_init + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 			cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 			img_col = img_data + (current_row + direction) * width + (width - 1);
+			current_col = width - 1;
 		}
 		else if (!is_forward && current_col == width - 1 && current_row > 0) {
 			// 左下->右上，碰右边界
 			cost_init_col = cost_init + (current_row + direction) * width * disp_range ;
 			cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range;
 			img_col = img_data + (current_row + direction) * width;
+			current_col = 0;
 		}
 		else {
 			cost_init_col += direction * (width - 1) * disp_range;
@@ -394,7 +396,6 @@ void sgm_util::CostAggregateDagonal_2(const uint8* img_data, const sint32& width
 		}
 
 		// 自路径上第2个像素开始按顺序聚合
-		gray = *img_col;
 		for (sint32 i = 0; i < height - 1; i++) {
 			uint8 min_cost = UINT8_MAX;
 			for (sint32 d = 0; d < disp_range; d++) {
@@ -403,7 +404,7 @@ void sgm_util::CostAggregateDagonal_2(const uint8* img_data, const sint32& width
 				const uint16 l1 = cost_last_path[d + 1];
 				const uint16 l2 = cost_last_path[d] + P1;
 				const uint16 l3 = cost_last_path[d + 2] + P1;
-				const uint16 l4 = mincost_last_path + P2_Init / (abs(gray - gray_last) + 1);
+				const uint16 l4 = mincost_last_path + std::max(P1, P2_Init / (abs(gray - gray_last) + 1));
 
 				const uint8 cost_s = cost + static_cast<uint8>(std::min(std::min(l1, l2), std::min(l3, l4)) - mincost_last_path);
 
@@ -427,12 +428,14 @@ void sgm_util::CostAggregateDagonal_2(const uint8* img_data, const sint32& width
 				cost_init_col = cost_init + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 				cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 				img_col = img_data + (current_row + direction) * width + (width - 1);
+				current_col = width - 1;
 			}
 			else if (!is_forward && current_col == width - 1 && current_row > 0) {
 				// 左下->右上，碰右边界
 				cost_init_col = cost_init + (current_row + direction) * width * disp_range;
 				cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range;
 				img_col = img_data + (current_row + direction) * width;
+				current_col = 0;
 			}
 			else {
 				cost_init_col += direction * (width - 1) * disp_range;
@@ -442,7 +445,6 @@ void sgm_util::CostAggregateDagonal_2(const uint8* img_data, const sint32& width
 
 			// 像素值重新赋值
 			gray_last = gray;
-			gray = *img_col;
 		}
 	}
 }

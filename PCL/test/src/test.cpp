@@ -1,16 +1,9 @@
-#include <iostream>
-#include <pcl/common/common_headers.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/console/parse.h>
+#include "pcl_lib.h"
 
 using namespace pcl;
 
- 
 int main(int argc, char **argv) {
     std::cout << "Test PCL !!!" << std::endl;
-    
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr point_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
     uint8_t r(255), g(15), b(15);
     for (float z(-1.0); z <= 1.0; z += 0.05)
@@ -25,6 +18,7 @@ int main(int argc, char **argv) {
             static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
         point.rgb = *reinterpret_cast<float*>(&rgb);
         point_cloud_ptr->points.push_back (point);
+        
       }
     if (z < 0.0)
       {

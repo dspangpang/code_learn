@@ -3,14 +3,21 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
+                "/usr/include/",
+                "/usr/local/include/",
+                "/usr/local/cuda-11.0/include",
+                "/usr/local/cuda/include",
+                "/usr/local/include/opencv4/opencv2",
                 "/usr/local/include/opencv4",
-                "/usr/include/pcl-1.10",
                 "/usr/include/eigen3",
-                "/usr/include/vtk-7.1",
-                "/usr/include/openni2"
+                "${workspaceFolder}/**"
             ],
-            "defines": [],
+            "defines": [
+                "_ DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "CONFIG_LONG_FILE_NAME"
+            ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",

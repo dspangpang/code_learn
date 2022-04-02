@@ -252,6 +252,8 @@ T Stack<T>::top () const
 一句话概括引用与取地址的区别：
 **和类型在一起的是引用**，**和变量在一起的是取址**
 
+#### 举例说明
+
 1. 引用在赋值=的左边，而取地址在赋值的右边。
 
 ```c++
@@ -276,3 +278,8 @@ vector<int> vec1(10,1); //initialize vec1: 10 elements, every element's value is
 vector<int> &vec2 = vec1; // vec2 is reference to vec1
 vector<int> *vec3 = &vec2; //vec3 is addresss of vec1 and vec2
 ```
+
+#### for遍历容器
+
+* ```for(auto i : v)```v是一个可遍历的容器或流，比如vector类型，i就用来在遍历过程中读取容器里的每一个元素。
+* ```for(auto &i : v)```与上面不同的是，采取引用的方式之后，在遍历的过程中可以对容器的值进行修改。

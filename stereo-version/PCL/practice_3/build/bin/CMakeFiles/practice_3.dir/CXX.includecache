@@ -6,15 +6,9 @@
 
 #IncludeRegexTransform: 
 
-/home/jzz/code_learn/stereo-version/PCL/practice_3/src/MyPoint.h
-pcl_lib.h
-/home/jzz/code_learn/stereo-version/PCL/practice_3/src/pcl_lib.h
-
 /home/jzz/code_learn/stereo-version/PCL/practice_3/src/main.cpp
 pcl_lib.h
 /home/jzz/code_learn/stereo-version/PCL/practice_3/src/pcl_lib.h
-MyPoint.h
-/home/jzz/code_learn/stereo-version/PCL/practice_3/src/MyPoint.h
 
 /home/jzz/code_learn/stereo-version/PCL/practice_3/src/pcl_lib.h
 iostream

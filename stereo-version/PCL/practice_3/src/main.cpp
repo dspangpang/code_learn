@@ -1,62 +1,38 @@
-#define PCL_NO_PRECOMPILE  //取消预编译
-
 #include"pcl_lib.h"
-#include"MyPoint.h"
-
-int getTimeStamp(){
-
-    static int time = 0;
-    time ++ ;
-    return time ;
-}
-
 
 int main(){
 
-    pcl::PointCloud<MyPoint>::Ptr cloud;
-    cloud.reset(new pcl::PointCloud<MyPoint>);
-    cloud->width = 100;
-    cloud->height = 100;
-    cloud->is_dense = false;
-    cloud->points.resize(100 * 100);
+    pcl::PCDReader reader;                  //PCD文件读取类
+    pcl::PCLPointCloud2 org;                //用于接受PCD点云数据的结构
 
-    for (size_t i = 0; i < 100; i++)
-    {
-        for (size_t j = 0; j < 100; j++)
-        {
-            cloud->points[i * 100 + j].x = rand() / (RAND_MAX + 1.0f);  //没有重载二位数组
-            cloud->points[i * 100 + j].y = rand() / (RAND_MAX + 1.0f);
-            cloud->points[i * 100 + j].z = rand() / (RAND_MAX + 1.0f);
+    // reader.read("../../doc/practice_1.pcd",org);
 
-            cloud->points[i * 100 + j].r = rand()%256;
-            cloud->points[i * 100 + j].g = rand()%256;
-            cloud->points[i * 100 + j].b = rand()%256;
+    pcl::io::loadPCDFile("../../doc/practice_1.pcd",org);   //对reader类的一个封装
 
-            cloud->points[i * 100 + j].time_stamp = getTimeStamp();
-        }
-        
-    }
+    for(auto &f : org.fields)               //显示PCD点云数据类型
+        std::cout << f.name <<std::endl;
 
-    pcl::io::savePCDFile("practice_2.pcd",*cloud);
 
-    std::cout << cloud->points.at(150) <<std::endl;
-    
 
-    // to show
-#if 0
-    pcl::visualization::CloudViewer viewer("viewer");   
-    viewer.showCloud(cloud);                    //不是模板函数实现的，是通过重载实现的
-    return 0; 
-#else
-    pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer); //在预编译的时候容易找不到自建模板，所以可以取消预编译
-    viewer->addPointCloud<MyPoint>(cloud);
+    pcl::PointCloud<pcl::PointXYZRGB> cloud;    //这次没有取指针
 
-    //viewer->setPointCloudRenderingProperties可以设置点的属性参数
-    while (!viewer->wasStopped())
-    {
-        viewer->spinOnce(100);  //图像100毫秒循环一次
-    }
-    
-#endif 
-    return 0; 
+    pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer);
+
+    pcl::fromPCLPointCloud2<pcl::PointXYZRGB>(org, cloud);  //将读取的PCD文件转换成可被可视化的点云数据格式
+
+    pcl::PCDWriter writer;                                              //将文件存储
+    writer.writeASCII("../../doc/practice_3_ascii_writer.pcd", cloud);
+    writer.writeBinary("../../doc/practice_3_binary_writer.pcd", cloud);
+    writer.writeBinary("../../doc/practice_3_binary_compress_writer.pcd", cloud);
+
+    pcl::io::savePCDFileASCII("../../doc/practice_3_ascii_io.pcd", cloud);
+
+    viewer->addPointCloud(cloud.makeShared());
+
+    while(!viewer->wasStopped())
+        viewer->spinOnce(100);
+
+
+    return 0;
+
 }

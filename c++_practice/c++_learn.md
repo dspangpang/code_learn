@@ -96,7 +96,7 @@ int Pet::Cnt = 0; //静态变量的初始化，分配内存
 
 &emsp;&emsp;有了虚函数，基类指针指向基类对象时就使用基类的成员（包括成员函数和成员变量），指向子类对象时就使用子类的成员。
 &emsp;&emsp;换句话说，基类指针可以按照基类的方式来做事，也可以按照派生类的方式来做事，它有多种形态，或者说有多种表现方式，我们将这种现象称为**多态**,同一条语句可以执行不同的操作，看起来有不同表现方式，这就是多态，所以体现了多态性.
-[程序举例](./c++_practice/virtual_function/virtual.cpp)
+[程序举例](./virtual_function/virtual.cpp)
 
 ### 运算符的重载
 
@@ -140,7 +140,7 @@ class C :public B, public A //多重继承
 
 **概念**：A作为基类，B和C都继承与A。最后一个类D又继承于B和C，这样形式的继承称为菱形继承。
 
-&emsp;&emsp;&emsp;&emsp;&emsp;![分段扫描举例](./imges/菱形继承.png)
+&emsp;&emsp;&emsp;&emsp;&emsp;![分段扫描举例](../imges/菱形继承.png)
 
 **菱形继承存在缺点**:
 
@@ -150,14 +150,14 @@ class C :public B, public A //多重继承
 **解决方式**:
 
 * **数据冗余**：使用虚继承的方式。
-* **访问不明确（二义性）**：通过作用域访问符::来明确调用。虚继承也可以解决这个问题。[示例](./c++_practice/Multiple_Inheritance/mul_inherite.cpp)
+* **访问不明确（二义性）**：通过作用域访问符::来明确调用。虚继承也可以解决这个问题。[示例](./Multiple_Inheritance/mul_inherite.cpp)
 
 ### 虚继承
 
 * **虚继承的作用**：为了保证公共继承对象在创建时只保存一分实例
 * **虚继承解决了菱形继承的两个问题**：
   * **数据冗余**：顶级基类在整个体系中只保存了一份实例
-  * **访问不明确（二义性）**：可以不通过作用域访问符::来调用（原理就是因为顶级基类在整个体系中只保存了一份实例）[示例](./c++_practice/Multiple_Inheritance/mul_inherite_virtual.cpp)
+  * **访问不明确（二义性）**：可以不通过作用域访问符::来调用（原理就是因为顶级基类在整个体系中只保存了一份实例）[示例](./Multiple_Inheritance/mul_inherite_virtual.cpp)
 
 ### 副本构造器
 
@@ -171,8 +171,8 @@ obj2 = obj1;
 
 **解决办法**：
 
-* 重载“=”操作符 [示例](./c++_practice/copy_constructor/override=.cpp)
-* 亲自定义个副本构造器(系统会自动生成逐一复制的副本构造器)```MyClass(const MyClass &rhs);```[示例](./c++_practice/copy_constructor/copy_constuctor.cpp)
+* 重载“=”操作符 [示例](./copy_constructor/override=.cpp)
+* 亲自定义个副本构造器(系统会自动生成逐一复制的副本构造器)```MyClass(const MyClass &rhs);```[示例](./copy_constructor/copy_constuctor.cpp)
 
 ### 模板
 

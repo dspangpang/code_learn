@@ -26,7 +26,7 @@
 
 ### CUDA编程模型
 
-![cuda编程模型](./imges/cuda编程模型.jpg)
+![cuda编程模型](../imges/cuda编程模型.jpg)
 
 1. CPU分配空间给GPU```cudaMalloc()```
 
@@ -49,7 +49,7 @@
 
 ### GPU硬件特点
 
-![GPU硬件特点](./imges/GPU硬件特点.jpg)
+![GPU硬件特点](../imges/GPU硬件特点.jpg)
 
 **SM**即流处理器：把Kernel分配的线程块放到SM中运行
 
@@ -93,7 +93,7 @@
 
 最常见的例子是并行求和算法，以下图为例子
 
-![并行加法举例](./imges/并行加法举例.jpg)
+![并行加法举例](../imges/并行加法举例.jpg)
 
 由图可知其**算法步骤**大致可以分为：
 
@@ -129,7 +129,7 @@ __global__ void shared_reduce(float * d_out, float * d_in){
 
 &emsp;&emsp;例如计算一家餐厅的一周以来的**前某天**的收入总和。以下图为例子。
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![扫描举例](./imges/扫描算法举例.jpg)
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![扫描举例](../imges/扫描算法举例.jpg)
 
 1. 先让里面所有数据间隔为$2^0$的数据两两相加
 2. 再让里面数据间隔为$2^1$的数据两两相加，一直执行n次，截至条件为$2^n \geq s$,s为数据总量
@@ -155,7 +155,7 @@ __global__ void global_scan(float * d_out, float * d_in, int size){
 }
 ```
 
-**目前该[程序](./cuda_code_practice/scan/scan.cu)存在问题**：当输入的d_in的size太大时会出现计算错误
+**目前该[程序](./scan/scan.cu)存在问题**：当输入的d_in的size太大时会出现计算错误
 
 ### 并行直方图
 
@@ -234,7 +234,7 @@ $$
     0 & 2 & 0 & 1 & 2 & 2  
 \end{bmatrix}$
 
-&emsp;&emsp;&emsp;&emsp;&emsp;![分段扫描举例](./imges/分段扫描举例.jpg)
+&emsp;&emsp;&emsp;&emsp;&emsp;![分段扫描举例](../imges/分段扫描举例.jpg)
 
 ### 流Stream
 
@@ -265,9 +265,9 @@ Stream是实现以上两个并行的重要工具。基本的概念是：
 2. 两种常见的GPU通信模式
    1. 没必要进行数据交换,GPU间没有数据共享
    2. 有部分数据交换,GPU需要冗余数据存储。要避免通过主机内存中转数据(从GPU复制到Ram,再复制到另一个GPU上)
-   ```cudaError_t cudaGetDeviceCount(int* count);```获得的GPU数量
+   ```cudaError_t cudaGetDeviceCount(int*count);```获得的GPU数量
    ```cudaError_t cudaSetDevice(int id);```指定使用哪个GPU.从0到n-1,默认设置为0.可以使用循环向多个GPU发送指令,异步不会阻塞
-   ```cudaError_t cudaGetDeviceProperties(struct cudaDeviceProp *prop,int device);```获得GPU属性
+   ```cudaError_t cudaGetDeviceProperties(struct cudaDeviceProp*prop,int device);```获得GPU属性
 
 #### 点对点通信
 
@@ -280,7 +280,7 @@ Stream是实现以上两个并行的重要工具。基本的概念是：
 
 #### 点对点内存复制
 
-```cudaError_t cudaMemcpyPeerAsync(void* dst, int dstDev,void* src,int srcDev,size_t nBytes, cudaStream_t stream);```启动P2P后,异步复制设备上的数据,从srcDev传输到dstDev内存中.如果srcDev和dstDev共享相同的PCIe根节点,则数据通过PCIe最短路径传输
+```cudaError_t cudaMemcpyPeerAsync(void*dst, int dstDev,void* src,int srcDev,size_t nBytes, cudaStream_t stream);```启动P2P后,异步复制设备上的数据,从srcDev传输到dstDev内存中.如果srcDev和dstDev共享相同的PCIe根节点,则数据通过PCIe最短路径传输
 
 #### 统一寻址的点对点访问
 

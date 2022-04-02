@@ -4,7 +4,7 @@
 
 ### 双目相机模型
 
-![扫描举例](./imges/双目相机模型.svg)
+![扫描举例](../imges/双目相机模型.svg)
 
 $$ \left\{
 \begin{aligned}
@@ -27,9 +27,29 @@ $$ \left\{
 \Rightarrow z = \frac{b}{xl-xr}f
 $$
 
-### 相机坐标系——像面坐标系
 
-![扫描举例](./imges/相机坐标系—像面坐标系.svg)
+### 坐标系变化
+
+#### 像面坐标系到图片像素坐标系
+![扫描举例](../imges/像面坐标系-像素坐标系.svg)
+
+$$
+\left\{
+\begin{aligned}
+u & = \frac{x}{\mathrm{d}x}+u_0  \\
+v & = \frac{y}{\mathrm{d}y}+v_0  \\
+\end{aligned}
+\right.
+\Rightarrow
+\begin{bmatrix} u \\ v \\ 1
+\end{bmatrix}
+= \begin{bmatrix} \frac{1}{\mathrm{d}x} & 0 & u_0\\
+0&\frac{1}{\mathrm{d}x}&v_0\\ 0&0&1 \end{bmatrix}
+\begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+$$
+#### 相机坐标系——像面坐标系
+
+![扫描举例](../imges/相机坐标系—像面坐标系.svg)
 
 $$
 \begin{aligned}
@@ -72,11 +92,11 @@ $$
 \begin{bmatrix} X_c\\Y_c\\ Z_c \\1 \end{bmatrix}
 $$
 
-### 世界坐标系——相机坐标系
+#### 世界坐标系——相机坐标系
 
-#### 刚体变换：旋转
+##### 刚体变换：旋转
 
-![扫描举例](./imges/刚体变换-旋转.svg)
+![扫描举例](../imges/刚体变换-旋转.svg)
 
 $$
 \begin{aligned}
@@ -135,7 +155,7 @@ $$
 \right.
 $$
 
-#### 刚体变换：平移
+##### 刚体变换：平移
 
 $$
 \left \{ \begin{aligned}
@@ -154,7 +174,7 @@ x^*\\y^*\\z^*\\1\end{bmatrix}
 \begin{bmatrix}x\\y\\z\\1\end{bmatrix}
 $$
 
-#### 刚体变换整合
+##### 刚体变换整合
 
 $$
 \left \{ \begin{aligned}
@@ -213,9 +233,9 @@ $$\Rightarrow\begin{bmatrix} u \\ v \\ 1 \end{bmatrix} =\frac{1}{Z_c}
 
 ### SGM匹配
 
-#### SGM_C++程序框图
+#### SGM程序框图
 
-![扫描举例](./imges/SGM结构.svg)
+![扫描举例](../imges/SGM结构.svg)
 
 #### Census变换法
 

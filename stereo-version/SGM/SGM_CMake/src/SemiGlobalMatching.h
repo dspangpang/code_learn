@@ -51,7 +51,7 @@ bool Initialize(const uint32& width, const uint32& height, const SGMOption& opti
 bool Match(const uint8* img_left, const uint8* img_right, float32* disp_left);
 
 /**
- * \brief 重设
+ * \brief 重新进行初始化
  * \param width		输入，核线像对影像宽
  * \param height	输入，核线像对影像高
  * \param option	输入，SemiGlobalMatching参数

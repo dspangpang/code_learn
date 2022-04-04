@@ -118,9 +118,9 @@ $$
 \end{equation}
 $$
 
-### 刚体变换
+#### 刚体变换
 
-#### 旋转
+##### 旋转
 
 下面分析一下刚体变化的公式：
 
@@ -184,7 +184,7 @@ $$
 \right.
 $$
 
-#### 平移
+##### 平移
 
 平移量的计算比较容易理解，这边直接列公式可得：
 $$
@@ -204,18 +204,18 @@ x^*\\y^*\\z^*\\1\end{bmatrix}
 \begin{bmatrix}x\\y\\z\\1\end{bmatrix}
 $$
 
-#### 刚体变换整合
+##### 刚体变换整合
 
 $$
 \begin{equation}\tag9
 \left \{ \begin{aligned}
-\begin{bmatrix}x^*\\y^*\\z^*\end{bmatrix} 
+\begin{bmatrix}x^*\\y^*\\z^*\end{bmatrix}
  &=R_{3\times3}
 \begin{bmatrix}x\\y\\z\end{bmatrix} + t_{3\times1}
 \\
 \begin{bmatrix}
 x^*\\y^*\\z^*
-\end{bmatrix} &= \begin{bmatrix} R_{3\times3} & 
+\end{bmatrix} &= \begin{bmatrix} R_{3\times3} &
 t_{3\times1}
 \end{bmatrix} \begin{bmatrix}x\\y\\z\\1\end{bmatrix}
 \end{aligned}
@@ -223,7 +223,7 @@ t_{3\times1}
 \end{equation}
 $$
 
-### 世界坐标系
+#### 世界坐标系
 
 世界坐标系是一个固定的三维坐标系，是一个绝对坐标系，它旨在将空间中的所有点都统一到同一个坐标系下表达，在不同的应用场景中，世界坐标系的定义并不一样，比如大地测量中，将水准原点当做世界坐标系的原点；在相机标定中，将标定板的某个角点作为世界坐标系。
 **世界坐标系和相机坐标系都是三维坐标系，它们之间可以用旋转平移来做转换**。
@@ -232,13 +232,13 @@ $$
 $$
 \begin{equation}\tag{10 }
 \left \{ \begin{aligned}
-\begin{bmatrix}X_c\\Y_c\\Z_c\end{bmatrix} 
+\begin{bmatrix}X_c\\Y_c\\Z_c\end{bmatrix}
  &=R_{3\times3}
 \begin{bmatrix}X_w\\Y_w\\Z_w\end{bmatrix} + t_{3\times1}
 \\
 \begin{bmatrix}
 X_c\\Y_c\\Z_c
-\end{bmatrix} &= \begin{bmatrix} R_{3\times3} & 
+\end{bmatrix} &= \begin{bmatrix} R_{3\times3} &
 t_{3\times1}
 \end{bmatrix} \begin{bmatrix}X_w\\Y_w\\Z_w\\1\end{bmatrix}
 \end{aligned}
@@ -246,7 +246,7 @@ t_{3\times1}
 \end{equation}
 $$
 
-### 外参矩阵
+#### 外参矩阵
 
 **外参矩阵也是相机的关键参数之一**，由一个3x3的单位正交旋转矩阵$R$和3x1的平移矢量$t$组成，它们描述的是世界坐标系到相机坐标系之间的转换关系。需要提一点的是，在不同学科中外参矩阵会有一些定义区别，比如在摄影测量学科中，将相机坐标系转换到世界坐标系的旋转矩阵$R$以及摄影中心在世界坐标系中的位置$C$作为外参。它们目的一致，都是为了描述相机和世界坐标系之间的转换关系。
 
@@ -260,8 +260,7 @@ P_c = \begin{bmatrix}R & T
 \end{equation}
 $$
 
-
-### 投影矩阵
+#### 投影矩阵
 
 在实践过程中，最直接接触的是影像$(u,v)$坐标系和世界坐标系，在影像三维重建中，通常前者是输入，后者是输出，所以将世界坐标系转换成$(u,v)$坐标系是很关键的转换。
 
@@ -273,7 +272,7 @@ $$
     f_x & s & u_0 \\
     0 & f_y & v_0 \\
     0 & 0 & 1 \\
-\end{bmatrix}\begin{bmatrix} R_{3\times3} & 
+\end{bmatrix}\begin{bmatrix} R_{3\times3} &
 t_{3\times1}\end{bmatrix}\begin{bmatrix}X_w\\Y_w\\Z_w\\1\end{bmatrix}
 \end{equation}
 $$
@@ -284,12 +283,11 @@ $$
 $$
 \begin{equation}\tag{12}
 \lambda p = K \begin{bmatrix}R & T
-\end{bmatrix}  \begin{bmatrix}P_w \\ 1 
+\end{bmatrix}  \begin{bmatrix}P_w \\ 1
 \end{bmatrix}
 =M\begin{bmatrix}P_w \\ 1 \end{bmatrix}
 \end{equation}
 $$
-
 
 ### 双目相机模型
 
@@ -319,6 +317,124 @@ $$ \left\{
 \right.
 \Rightarrow z = \frac{b}{xl-xr}f
 $$
+
+### 关键矩阵
+
+#### 极平面和极线
+
+![极平面和极线](../imges/极平面和极线.svg)
+
+ | 符号 | 含义 |
+ | :---: | :---:|
+ | $O$ | 光心 |
+ | $I$ | 像面 |
+ | $p$ | 像平面上的对应点 |
+ | $P$ | 三维空间中的点 |
+ | $l$ | 极线 |
+#### 本质矩阵和基础矩阵
+
+设空间点P在左相机坐标系坐标的坐标为$P$，则在右相机坐标系中的坐标为$RP+t$，其在左右相机视图中的投影点分别为$p_1,p_2$。基于相机坐标系到影像坐标系的转换公式，得到如下转换式：
+$$
+\begin{align}\tag{1}
+    d_1 p_1 &= K_1 P \\ \tag{2}
+    d_2 p_2 &= K_2(RP + t)
+\end{align}
+$$
+
+左边的$p$是齐次坐标，如果对空间点也取齐次，即将空间点归一化到$Z=1$的平面，$d = \frac{1}{Z_c}$就变成了1，上式变成:
+$$
+\begin{align}\tag{3}
+    p_1 &= K_1 P \\ \tag{4}
+    p_2 &= K_2(RP + t)
+\end{align}
+$$
+该等式在齐次意义上成立，也就是乘以任意非零常数依旧相等。把$K$取到公式左侧：
+$$
+\begin{align}\tag{5}
+    K_1^{-1}p_1 &=  P \\ \tag{6}
+    K_2^{-1}p_2 &= (RP + t)
+\end{align}
+$$
+设：
+$$
+\left \{
+\begin{align}   \nonumber
+    x_1 &= P \\ \nonumber
+    x_2 &= RP+t
+\end{align}
+\right.
+\Rightarrow
+x_2 = Rx_1+t \tag{7}
+$$
+同时叉乘$t$，可得：
+$$
+\begin{align} \nonumber
+t\times x_2&=t \times Rx_1 + t \times t \\ \tag{8}
+\Rightarrow t \times Rx_1 &= t \times x_2
+\end{align}
+$$
+
+同时左乘$x_2^{T}$，可得：
+$$
+\begin{align} \nonumber
+x_2^{T}t \times Rx_1 &= x_2^{T}t \times x_2 \\ \tag{9}
+\Rightarrow x_2^{T}t \times Rx_1 &= 0
+\end{align}
+$$
+
+叉乘可以等价于用反对称矩阵来点乘，$t$的反对称矩阵表示为$t^{\wedge}$，上式变成:
+$$
+x_2^{T}t^{\wedge}Rx_1 = 0  \tag{10}
+$$
+
+该式描述了像平面坐标$x_1,x_2$之间的联系，即空间点在两个像平面的成像点通过外参矩阵$R,t$建立了一个等式关系，或者称为一种约束关系，这个约束就叫做对极约束。
+
+把像平面坐标$x_1,x_2$还原为之前的$p_1,p_2$,可以的到：
+$$
+p_2^{T}K_2^{-T}t^{\wedge}RK_1^{-1}p_1 = 0 \tag{11}
+$$
+
+这两个公式是等价的，它们都是对极约束，几何意义是$O_1,P,O_2,p_1,p_2$共面。把上面两式像点中间夹着的部分记做两个矩阵：本质矩阵E：Essential matrix和基础矩阵F：Fundamental matrix。得到更简洁的表示形式：
+$$
+\begin{align} \tag{12}
+x_2^{T}Ex_1 &= 0 \\ \tag{13}
+p_2^{T}Fp_1 &= 0
+\end{align}
+$$
+其中，本质矩阵和基础矩阵的表达式分别是：
+$$
+\begin{align} \tag{14}
+E &=  t^{\wedge}R\\ \tag{15}
+F &= K_2^{-T}t^{\wedge}RK_1^{-1}
+\end{align}
+$$
+本质矩阵和基础矩阵的区别是：本质矩阵是和$x$建立的关系，而$x$是由内参矩阵$K$和像素坐标$p$计算出来的，所以本质矩阵使用的前提是内参矩阵$K$已知；而基础矩阵直接和像素坐标$p$建立联系，所以不需要已知内参矩阵。
+
+#### 单应性矩阵
+
+**当空间中场景是同一个平面时，它们在左右视图的投影点可通过可逆的单应性矩阵一对一相互转换**，表达式为：
+$$
+\begin{align} \tag{16}
+p_2 &= Hp_1
+\end{align}
+$$
+
+实际上，单应性矩阵不只是描述同一平面的像素点之间的关系，而是**同一个平面在任意坐标系之间都可以建立单应性变换关系，比如影像坐标系与影像坐标系之间，世界坐标系和影像坐标系之间**。
+从单应性矩阵的角度，我们来完成基础矩阵的另一个推导，假设左右视图中的一对同名点$p_1,p_2$它们之间的单应性变换矩阵为$H$，则有:
+$$
+p_2 = Hp_1 \tag{17}
+$$
+
+设右视图上的极点为$e_2$,则$e_2$和$p_2$共同构成极线$l$,则有：
+$$
+l = c_2 \times p_2 = c_2^{\wedge}Hp_1 \tag{18}
+$$
+由于$p_2$在极线上，则有$p_2^{t}l = 0$ 推得：
+$$
+F = e_2^{\wedge}H
+$$
+
+即基础矩阵等于右视图极点的反对称矩阵和像素之间单应性矩阵的乘积。
 
 ## 代码实践
 

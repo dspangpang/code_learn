@@ -1,5 +1,0 @@
-/home/jzz/cuda_ubuntu_learn/stereo/SGM/SGM_CMake/build/CMakeFiles/rebuild_cache.dir
-/home/jzz/cuda_ubuntu_learn/stereo/SGM/SGM_CMake/build/CMakeFiles/edit_cache.dir
-/home/jzz/cuda_ubuntu_learn/stereo/SGM/SGM_CMake/build/bin/CMakeFiles/rebuild_cache.dir
-/home/jzz/cuda_ubuntu_learn/stereo/SGM/SGM_CMake/build/bin/CMakeFiles/edit_cache.dir
-/home/jzz/cuda_ubuntu_learn/stereo/SGM/SGM_CMake/build/bin/CMakeFiles/SemiGlobalMatching.dir

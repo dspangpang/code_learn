@@ -1,24 +1,19 @@
+/* -*-c++-*- SemiGlobalMatching - Copyright (C) 2020.
+* Author	:
+* Describe	: implement of sgm_util
+*/
+
+#include "stdafx.h"
 #include "sgm_util.h"
+#include <algorithm>
+#include <cassert>
+#include <vector>
+#include <queue>
 
-// unsigned to 32bit
-//计算hamming距离
-uint32 sgm_util::hamDist32(const uint32& x, const uint32& y)
+void sgm_util::census_transform_5x5(const uint8* source, uint32* census, const sint32& width,
+	const sint32& height)
 {
-	uint32 dist = 0, val = x ^ y;
-
-	// Count the number of set bits
-	while (val)
-	{
-		++dist;
-		val &= val - 1;
-	}
-
-	return dist;
-}
-
-void sgm_util::census_transform_5x5(const uint8* source, uint32* census, const sint32& width,const sint32& height)
-{
-	if (source == nullptr || census == nullptr || width <= 5u || height <= 5u) {
+	if (source == nullptr || census == nullptr || width <= 5 || height <= 5) {
 		return;
 	}
 
@@ -46,6 +41,64 @@ void sgm_util::census_transform_5x5(const uint8* source, uint32* census, const s
 		}
 	}
 }
+
+void sgm_util::census_transform_9x7(const uint8* source, uint64* census, const sint32& width, const sint32& height)
+{
+	if (source == nullptr || census == nullptr || width <= 9 || height <= 7) {
+		return;
+	}
+
+	// 逐像素计算census值
+	for (sint32 i = 4; i < height - 4; i++) {
+		for (sint32 j = 3; j < width - 3; j++) {
+
+			// 中心像素值
+			const uint8 gray_center = source[i * width + j];
+
+			// 遍历大小为5x5的窗口内邻域像素，逐一比较像素值与中心像素值的的大小，计算census值
+			uint64 census_val = 0u;
+			for (sint32 r = -4; r <= 4; r++) {
+				for (sint32 c = -3; c <= 3; c++) {
+					census_val <<= 1;
+					const uint8 gray = source[(i + r) * width + j + c];
+					if (gray < gray_center) {
+						census_val += 1;
+					}
+				}
+			}
+
+			// 中心像素的census值
+			census[i * width + j] = census_val;
+		}
+	}
+}
+
+uint8 sgm_util::Hamming32(const uint32& x, const uint32& y)
+{
+	uint32 dist = 0, val = x ^ y;
+
+	// Count the number of set bits
+	while (val) {
+		++dist;
+		val &= val - 1;
+	}
+
+	return static_cast<uint8>(dist);
+}
+
+uint8 sgm_util::Hamming64(const uint64& x, const uint64& y)
+{
+	uint64 dist = 0, val = x ^ y;
+
+	// Count the number of set bits
+	while (val) {
+		++dist;
+		val &= val - 1;
+	}
+
+	return static_cast<uint8>(dist);
+}
+
 
 void sgm_util::CostAggregateLeftRight(const uint8* img_data, const sint32& width, const sint32& height, const sint32& min_disparity, const sint32& max_disparity,
 	const sint32& p1, const sint32& p2_init, const uint8* cost_init, uint8* cost_aggr, bool is_forward)
@@ -96,7 +149,6 @@ void sgm_util::CostAggregateLeftRight(const uint8* img_data, const sint32& width
 			uint8 min_cost = UINT8_MAX;
 			for (sint32 d = 0; d < disp_range; d++){
 				// Lr(p,d) = C(p,d) + min( Lr(p-r,d), Lr(p-r,d-1) + P1, Lr(p-r,d+1) + P1, min(Lr(p-r))+P2 ) - min(Lr(p-r))
-				// 上方为了规避边界检查在首尾各多分配一个空间(d-1需要判断是否为边界)
 				const uint8  cost = cost_init_row[d];
 				const uint16 l1 = cost_last_path[d + 1];
 				const uint16 l2 = cost_last_path[d] + P1;
@@ -174,7 +226,6 @@ void sgm_util::CostAggregateUpDown(const uint8* img_data, const sint32& width, c
 			uint8 min_cost = UINT8_MAX;
 			for (sint32 d = 0; d < disp_range; d++) {
 				// Lr(p,d) = C(p,d) + min( Lr(p-r,d), Lr(p-r,d-1) + P1, Lr(p-r,d+1) + P1, min(Lr(p-r))+P2 ) - min(Lr(p-r))
-				// 上方为了规避边界检查在首尾各多分配一个空间(d-1需要判断是否为边界)
 				const uint8  cost = cost_init_col[d];
 				const uint16 l1 = cost_last_path[d + 1];
 				const uint16 l2 = cost_last_path[d] + P1;
@@ -252,12 +303,14 @@ void sgm_util::CostAggregateDagonal_1(const uint8* img_data, const sint32& width
 			cost_init_col = cost_init + (current_row + direction) * width * disp_range;
 			cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range;
 			img_col = img_data + (current_row + direction) * width;
+            current_col = 0;
 		}
 		else if (!is_forward && current_col == 0 && current_row > 0) {
 			// 右下->左上，碰左边界
 			cost_init_col = cost_init + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 			cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 			img_col = img_data + (current_row + direction) * width + (width - 1);
+            current_col = width - 1;
 		}
 		else {
 			cost_init_col += direction * (width + 1) * disp_range;
@@ -305,12 +358,14 @@ void sgm_util::CostAggregateDagonal_1(const uint8* img_data, const sint32& width
 				cost_init_col = cost_init + (current_row + direction) * width * disp_range;
 				cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range;
 				img_col = img_data + (current_row + direction) * width;
+                current_col = 0;
 			}
 			else if (!is_forward && current_col == 0 && current_row > 0) {
 				// 右下->左上，碰左边界
 				cost_init_col = cost_init + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 				cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 				img_col = img_data + (current_row + direction) * width + (width - 1);
+                current_col = width - 1;
 			}
 			else {
 				cost_init_col += direction * (width + 1) * disp_range;
@@ -374,14 +429,14 @@ void sgm_util::CostAggregateDagonal_2(const uint8* img_data, const sint32& width
 			cost_init_col = cost_init + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 			cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 			img_col = img_data + (current_row + direction) * width + (width - 1);
-			current_col = width - 1;
+            current_col = width - 1;
 		}
 		else if (!is_forward && current_col == width - 1 && current_row > 0) {
 			// 左下->右上，碰右边界
 			cost_init_col = cost_init + (current_row + direction) * width * disp_range ;
 			cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range;
 			img_col = img_data + (current_row + direction) * width;
-			current_col = 0;
+            current_col = 0;
 		}
 		else {
 			cost_init_col += direction * (width - 1) * disp_range;
@@ -397,6 +452,7 @@ void sgm_util::CostAggregateDagonal_2(const uint8* img_data, const sint32& width
 
 		// 自路径上第2个像素开始按顺序聚合
 		for (sint32 i = 0; i < height - 1; i++) {
+			gray = *img_col;
 			uint8 min_cost = UINT8_MAX;
 			for (sint32 d = 0; d < disp_range; d++) {
 				// Lr(p,d) = C(p,d) + min( Lr(p-r,d), Lr(p-r,d-1) + P1, Lr(p-r,d+1) + P1, min(Lr(p-r))+P2 ) - min(Lr(p-r))
@@ -428,14 +484,14 @@ void sgm_util::CostAggregateDagonal_2(const uint8* img_data, const sint32& width
 				cost_init_col = cost_init + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 				cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range + (width - 1) * disp_range;
 				img_col = img_data + (current_row + direction) * width + (width - 1);
-				current_col = width - 1;
+                current_col = width - 1;
 			}
 			else if (!is_forward && current_col == width - 1 && current_row > 0) {
 				// 左下->右上，碰右边界
 				cost_init_col = cost_init + (current_row + direction) * width * disp_range;
 				cost_aggr_col = cost_aggr + (current_row + direction) * width * disp_range;
 				img_col = img_data + (current_row + direction) * width;
-				current_col = 0;
+                current_col = 0;
 			}
 			else {
 				cost_init_col += direction * (width - 1) * disp_range;
@@ -449,4 +505,98 @@ void sgm_util::CostAggregateDagonal_2(const uint8* img_data, const sint32& width
 	}
 }
 
+void sgm_util::MedianFilter(const float32* in, float32* out, const sint32& width, const sint32& height,
+	const sint32 wnd_size)
+{
+	const sint32 radius = wnd_size / 2;
+	const sint32 size = wnd_size * wnd_size;
 
+	// 存储局部窗口内的数据
+	std::vector<float32> wnd_data;
+	wnd_data.reserve(size);
+
+	for (sint32 i = 0; i < height; i++) {
+		for (sint32 j = 0; j < width; j++) {
+			wnd_data.clear();
+
+			// 获取局部窗口数据
+			for (sint32 r = -radius; r <= radius; r++) {
+				for (sint32 c = -radius; c <= radius; c++) {
+					const sint32 row = i + r;
+					const sint32 col = j + c;
+					if (row >= 0 && row < height && col >= 0 && col < width) {
+						wnd_data.push_back(in[row * width + col]);
+					}
+				}
+			}
+
+			// 排序
+			std::sort(wnd_data.begin(), wnd_data.end());
+			// 取中值
+			out[i * width + j] = wnd_data[wnd_data.size() / 2];
+		}
+	}
+}
+
+void sgm_util::RemoveSpeckles(float32* disparity_map, const sint32& width, const sint32& height,
+	const sint32& diff_insame, const uint32& min_speckle_aera, const float32& invalid_val)
+{
+	assert(width > 0 && height > 0);
+	if (width < 0 || height < 0) {
+		return;
+	}
+
+	// 定义标记像素是否访问的数组
+	std::vector<bool> visited(uint32(width*height),false);
+	for(sint32 i=0;i<height;i++) {
+		for(sint32 j=0;j<width;j++) {
+			if (visited[i * width + j] || disparity_map[i*width+j] == invalid_val) {
+				// 跳过已访问的像素及无效像素
+				continue;
+			}
+			// 广度优先遍历，区域跟踪
+			// 把连通域面积小于阈值的区域视差全设为无效值
+			std::vector<std::pair<sint32, sint32>> vec;
+			vec.emplace_back(i, j);
+			visited[i * width + j] = true;
+			uint32 cur = 0;
+			uint32 next = 0;
+			do {
+				// 广度优先遍历区域跟踪	
+				next = vec.size();
+				for (uint32 k = cur; k < next; k++) {
+					const auto& pixel = vec[k];
+					const sint32 row = pixel.first;
+					const sint32 col = pixel.second;
+					const auto& disp_base = disparity_map[row * width + col];
+					// 8邻域遍历
+					for(int r=-1;r<=1;r++) {
+						for(int c=-1;c<=1;c++) {
+							if(r==0&&c==0) {
+								continue;
+							}
+							int rowr = row + r;
+							int colc = col + c;
+							if (rowr >= 0 && rowr < height && colc >= 0 && colc < width) {
+								if(!visited[rowr * width + colc] &&
+									(disparity_map[rowr * width + colc] != invalid_val) &&
+									abs(disparity_map[rowr * width + colc] - disp_base) <= diff_insame) {
+									vec.emplace_back(rowr, colc);
+									visited[rowr * width + colc] = true;
+								}
+							}
+						}
+					}
+				}
+				cur = next;
+			} while (next < vec.size());
+
+			// 把连通域面积小于阈值的区域视差全设为无效值
+			if(vec.size() < min_speckle_aera) {
+				for(auto& pix:vec) {
+					disparity_map[pix.first * width + pix.second] = invalid_val;
+				}
+			}
+		}
+	}
+}

@@ -7,6 +7,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/jzz/code_learn/stereo-version/SGM/src/SemiGlobalMatching.cpp" "/home/jzz/code_learn/stereo-version/SGM/build/bin/CMakeFiles/SemiGlobalMatching.dir/SemiGlobalMatching.cpp.o"
   "/home/jzz/code_learn/stereo-version/SGM/src/main.cpp" "/home/jzz/code_learn/stereo-version/SGM/build/bin/CMakeFiles/SemiGlobalMatching.dir/main.cpp.o"
   "/home/jzz/code_learn/stereo-version/SGM/src/sgm_util.cpp" "/home/jzz/code_learn/stereo-version/SGM/build/bin/CMakeFiles/SemiGlobalMatching.dir/sgm_util.cpp.o"
+  "/home/jzz/code_learn/stereo-version/SGM/src/stdafx.cpp" "/home/jzz/code_learn/stereo-version/SGM/build/bin/CMakeFiles/SemiGlobalMatching.dir/stdafx.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

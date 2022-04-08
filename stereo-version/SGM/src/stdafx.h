@@ -1,16 +1,11 @@
+// stdafx.h : include file for standard system include files,
+// or project specific include files that are used frequently, but
+// are changed infrequently
+//
+
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <assert.h>
+#include <stdio.h>
 
-#include "SemiGlobalMatching.h"
-#include "sgm_util.h"
+// TODO: reference additional headers your program requires here
 
-#include <opencv2/opencv.hpp>
-
-#define Invalid_Float *(float*)("\xff\xff\xff\xff\xff\xff\xef\x7f")
-
-// #include<cuda_runtime.h>
-// #include<cuda.h>
-// #include<cuda_runtime_api.h>

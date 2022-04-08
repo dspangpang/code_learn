@@ -206,6 +206,33 @@ sgm_util.cpp.s:
 	cd /home/jzz/code_learn/stereo-version/SGM/build && $(MAKE) -f bin/CMakeFiles/SemiGlobalMatching.dir/build.make bin/CMakeFiles/SemiGlobalMatching.dir/sgm_util.cpp.s
 .PHONY : sgm_util.cpp.s
 
+stdafx.o: stdafx.cpp.o
+
+.PHONY : stdafx.o
+
+# target to build an object file
+stdafx.cpp.o:
+	cd /home/jzz/code_learn/stereo-version/SGM/build && $(MAKE) -f bin/CMakeFiles/SemiGlobalMatching.dir/build.make bin/CMakeFiles/SemiGlobalMatching.dir/stdafx.cpp.o
+.PHONY : stdafx.cpp.o
+
+stdafx.i: stdafx.cpp.i
+
+.PHONY : stdafx.i
+
+# target to preprocess a source file
+stdafx.cpp.i:
+	cd /home/jzz/code_learn/stereo-version/SGM/build && $(MAKE) -f bin/CMakeFiles/SemiGlobalMatching.dir/build.make bin/CMakeFiles/SemiGlobalMatching.dir/stdafx.cpp.i
+.PHONY : stdafx.cpp.i
+
+stdafx.s: stdafx.cpp.s
+
+.PHONY : stdafx.s
+
+# target to generate assembly for a file
+stdafx.cpp.s:
+	cd /home/jzz/code_learn/stereo-version/SGM/build && $(MAKE) -f bin/CMakeFiles/SemiGlobalMatching.dir/build.make bin/CMakeFiles/SemiGlobalMatching.dir/stdafx.cpp.s
+.PHONY : stdafx.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -224,6 +251,9 @@ help:
 	@echo "... sgm_util.o"
 	@echo "... sgm_util.i"
 	@echo "... sgm_util.s"
+	@echo "... stdafx.o"
+	@echo "... stdafx.i"
+	@echo "... stdafx.s"
 .PHONY : help
 
 

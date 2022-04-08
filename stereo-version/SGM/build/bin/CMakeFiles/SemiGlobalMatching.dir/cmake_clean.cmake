@@ -2,6 +2,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/SemiGlobalMatching.dir/SemiGlobalMatching.cpp.o"
   "CMakeFiles/SemiGlobalMatching.dir/main.cpp.o"
   "CMakeFiles/SemiGlobalMatching.dir/sgm_util.cpp.o"
+  "CMakeFiles/SemiGlobalMatching.dir/stdafx.cpp.o"
   "SemiGlobalMatching"
   "SemiGlobalMatching.pdb"
 )

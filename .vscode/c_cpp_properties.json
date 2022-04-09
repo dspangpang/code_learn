@@ -10,6 +10,7 @@
                 "/usr/include/openni2",
                 "/usr/local/cuda-11.0/include",
                 "/usr/local/cuda/include",
+                "/usr/include/CGAL",
                 "${workspaceFolder}/**"
             ],
             "defines": [],

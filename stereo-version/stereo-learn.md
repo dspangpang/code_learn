@@ -1,8 +1,8 @@
-# 双目视觉学习笔记
+# 双目视觉与三维重建
 
 [toc]
 
-## 理论部分
+## 双目视觉理论部分
 
 ### 坐标系变化
 
@@ -439,9 +439,13 @@ $$
 
 即基础矩阵等于右视图极点的反对称矩阵和像素之间单应性矩阵的乘积。
 
-## 代码实践
+## 三维重建基础
 
-### SGM匹配
+### 八叉树
+
+## 立体匹配算法
+
+### SGM匹配算法
 
 #### SGM程序框图
 
@@ -539,3 +543,71 @@ $I$表示像素的灰度，$P_{2_{int}}$是$P_2$的最大值，和$P_1$同为输
 ##### 中值滤波
 
 **含义**：中值滤波在立体匹配中使用的还挺广泛的，作为一个平滑算法，它主要是用来剔除视差图中的一些孤立的离群外点，同时还能起到填补小洞的作用。
+
+## 曲面重建算法
+
+### Marching Cubes
+
+### Smooth Methods
+
+#### 隐式方法
+
+* 输入：无序点云$P$ + 法向量$V$
+* 思想：计算定义在三维空间中的隐式函数来表示物体表面的三角网格
+* 优点：计算快，内存消耗低
+* 缺点：
+  * 鲁棒性差，尤其对外点空洞，不均匀点云分布
+  * 依赖法向量
+  * 无法还原sharp features
+
+##### Poisson surface reconstruction
+
+##### Screened Poisson surface reconstruction
+
+#### 显式方法
+
+* 输入：无序点云$P$，**不**需要法向量$V$
+* 思想：将曲面重建问题定义作用为在Delaunay Triangulation上的二分类问题，直接还原出物体表面。
+
+* 优点:
+  * 鲁棒性强，多用于基于MVS生成的稠密点云的曲面重建
+  * 不依赖法向量
+* 缺点：无法还原sharp features
+
+##### Efficient Multi-View Reconstruction of Large-Scale Scenes
+
+##### Robust and Efficient surface reconstruction
+
+### Primitive-based Methods
+
+* 输入：无序点云$P$，**不**需要法向量$V$
+* 思想：
+  * 对于某些人造的物体，家具，机械零件等，表面可以用高阶几何元素来表示。例如：平面，圆柱体，椎体。
+
+  * 从低维度的无序原始数据中提取高阶几何元素来表示物体来表示物体表面
+  
+  * 将提取出的离散的几何元素拼接成Polygonal Mesh
+
+#### Connectivity-based Methods
+
+**方法原文**：Architectural Modeling from Sparsely Scanned Range Date.
+
+* 优点:
+  * 算法复杂度低
+  * 可以还原sharp features
+* 缺点：鲁棒性差，尤其对于噪声比较严重的点云数据，intersection关系还原较差
+  
+#### Slicing-based Medthods
+
+**方法原文**：Robust piecewise-planar 3D reconstruction and completion from large-scale unstructured point data.
+**PolyFit**: Polyonal Surface Reconstruction from Point clouds.
+**Connect-Slice**: an hybrid approach for reconstruction 3D objects.
+
+* 优点:
+  * 鲁棒性强，应用场景比较丰富
+  * 保证输出mesh为2d manifold和intersection-free
+  * 可以还原sharp features
+* 缺点：
+  * 计算复杂度很高，内存消耗大
+  * 搜索空间大，优化速度慢
+

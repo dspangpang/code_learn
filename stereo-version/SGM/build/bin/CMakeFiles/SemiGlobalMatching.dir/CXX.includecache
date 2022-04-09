@@ -6,22 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/jzz/code_learn/stereo-version/SGM/src/SemiGlobalMatching.cpp
-stdafx.h
-/home/jzz/code_learn/stereo-version/SGM/src/stdafx.h
-SemiGlobalMatching.h
-/home/jzz/code_learn/stereo-version/SGM/src/SemiGlobalMatching.h
-sgm_util.h
-/home/jzz/code_learn/stereo-version/SGM/src/sgm_util.h
-algorithm
--
-vector
--
-cassert
--
-chrono
--
-
 /home/jzz/code_learn/stereo-version/SGM/src/SemiGlobalMatching.h
 sgm_types.h
 /home/jzz/code_learn/stereo-version/SGM/src/sgm_types.h
@@ -47,30 +31,6 @@ cstdint
 -
 limits
 -
-
-/home/jzz/code_learn/stereo-version/SGM/src/sgm_util.cpp
-stdafx.h
-/home/jzz/code_learn/stereo-version/SGM/src/stdafx.h
-sgm_util.h
-/home/jzz/code_learn/stereo-version/SGM/src/sgm_util.h
-algorithm
--
-cassert
--
-vector
--
-queue
--
-
-/home/jzz/code_learn/stereo-version/SGM/src/sgm_util.h
-sgm_types.h
-/home/jzz/code_learn/stereo-version/SGM/src/sgm_types.h
-cstring
--
-
-/home/jzz/code_learn/stereo-version/SGM/src/stdafx.cpp
-stdafx.h
-/home/jzz/code_learn/stereo-version/SGM/src/stdafx.h
 
 /home/jzz/code_learn/stereo-version/SGM/src/stdafx.h
 stdio.h

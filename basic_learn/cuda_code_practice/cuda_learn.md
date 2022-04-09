@@ -26,7 +26,7 @@
 
 ### CUDA编程模型
 
-![cuda编程模型](../imges/cuda编程模型.jpg)
+![cuda编程模型](../../imges/cuda编程模型.jpg)
 
 1. CPU分配空间给GPU```cudaMalloc()```
 
@@ -49,7 +49,7 @@
 
 ### GPU硬件特点
 
-![GPU硬件特点](../imges/GPU硬件特点.jpg)
+![GPU硬件特点](../../imges/GPU硬件特点.jpg)
 
 **SM**即流处理器：把Kernel分配的线程块放到SM中运行
 
@@ -93,7 +93,7 @@
 
 最常见的例子是并行求和算法，以下图为例子
 
-![并行加法举例](../imges/并行加法举例.jpg)
+![并行加法举例](../../imges/并行加法举例.jpg)
 
 由图可知其**算法步骤**大致可以分为：
 
@@ -129,7 +129,7 @@ __global__ void shared_reduce(float * d_out, float * d_in){
 
 &emsp;&emsp;例如计算一家餐厅的一周以来的**前某天**的收入总和。以下图为例子。
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![扫描举例](../imges/扫描算法举例.jpg)
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![扫描举例](../../imges/扫描算法举例.jpg)
 
 1. 先让里面所有数据间隔为$2^0$的数据两两相加
 2. 再让里面数据间隔为$2^1$的数据两两相加，一直执行n次，截至条件为$2^n \geq s$,s为数据总量
@@ -234,7 +234,7 @@ $$
     0 & 2 & 0 & 1 & 2 & 2  
 \end{bmatrix}$
 
-&emsp;&emsp;&emsp;&emsp;&emsp;![分段扫描举例](../imges/分段扫描举例.jpg)
+&emsp;&emsp;&emsp;&emsp;&emsp;![分段扫描举例](../../imges/分段扫描举例.jpg)
 
 ### 流Stream
 

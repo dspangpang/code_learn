@@ -546,6 +546,10 @@ $I$表示像素的灰度，$P_{2_{int}}$是$P_2$的最大值，和$P_1$同为输
 
 ## 曲面重建算法
 
+[pcl库写法链接](https://blog.csdn.net/qq_18820125/article/details/107442268?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-4.topblog&spm=1001.2101.3001.4242.3&utm_relevant_index=7)
+
+<https://blog.csdn.net/shenziheng1/article/details/71194149>
+
 ### Marching Cubes
 
 如何理解Marching Cubes算法的含义：
@@ -567,8 +571,18 @@ $I$表示像素的灰度，$P_{2_{int}}$是$P_2$的最大值，和$P_1$同为输
 
 等值面是空间中的一个曲面，我们规定空间中每一个点都有一个属性值，属性值相等连续空间组成的曲面，我们称之为等值面。
 
-
 切面与小正方体边的交点$P$可以通过线性插值进行计算：
+
+$$
+P = P_1 + (isovalue - V_1)(P_2 - P_1)(V_2 - V_1)
+$$
+
+```c++
+mu = (isolevel - valp1) / (valp2 - valp1);
+p.x = p1.x + mu * (p2.x - p1.x);
+p.y = p1.y + mu * (p2.y - p1.y);
+p.z = p1.z + mu * (p2.z - p1.z);
+```
 
 ### Smooth Methods
 
